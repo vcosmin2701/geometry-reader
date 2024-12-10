@@ -1,44 +1,51 @@
 import SwiftUI
 
-struct OuterView: View {
+struct AdaptiveCardView: View {
     var body: some View {
-        VStack {
-            Text("Top")
+        ZStack {
+            RoundedRectangle(cornerRadius: 15)
+                .fill(Color.teal)
+                .aspectRatio(168 / 262, contentMode: .fit)
             
-            InnerView()
-                .background(.green)
-            
-            Text("Bottom")
-        }
-    }
-}
-
-struct InnerView: View {
-    var body: some View {
-        HStack {
-            Text("Left")
-            
-            GeometryReader { proxy in
-                Text("Center")
-                    .background(.blue)
-                    .onTapGesture {
-                        print("Global center: \(proxy.frame(in: .global).midX) x \(proxy.frame(in: .global).midY)")
-                        print("Custom center: \(proxy.frame(in: .named("Custom")).midX) x \(proxy.frame(in: .named("Custom")).midY)")
-                        print("Local center: \(proxy.frame(in: .local).midX) x \(proxy.frame(in: .local).midY)")
-                    }
+            VStack {
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(Color.white)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 40)
+                    .overlay(
+                        Text("Inner Text")
+                            .font(.body)
+                            .foregroundColor(.black)
+                    )
+                    .padding(.horizontal, 12)
+                    .padding(.top, 120)
             }
-            .background(.orange)
-            
-            Text("Right")
+            .padding(.top, 16)
         }
     }
 }
 
 struct ContentView: View {
     var body: some View {
-        OuterView()
-            .background(.red)
-            .coordinateSpace(name: "Custom")
+        GeometryReader { geometry in
+            let totalSpacing: CGFloat = 18 * 3
+            let cardWidth = (geometry.size.width - totalSpacing) / 2
+            
+            ScrollView {
+                VStack(spacing: 16) {
+                    ForEach(0..<3) { _ in
+                        HStack(spacing: 16) {
+                            AdaptiveCardView()
+                                .frame(width: cardWidth)
+                            AdaptiveCardView()
+                                .frame(width: cardWidth)
+                        }
+                    }
+                }
+                .padding(.horizontal, 18)
+                .padding(.top, 18)
+            }
+        }
     }
 }
 
